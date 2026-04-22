@@ -10,14 +10,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install Python and dependencies
+    - name: Install system dependencies
       run: |
         apk add --no-cache python3 py3-pip tk tk-dev
-        python3 -m pip install --upgrade pip
-        pip3 install pyinstaller
+    
+    - name: Setup virtual environment
+      run: |
+        python3 -m venv /venv
+        . /venv/bin/activate
+        pip install --upgrade pip
+        pip install pyinstaller
     
     - name: Build executable
       run: |
+        . /venv/bin/activate
         pyinstaller --onefile --name password-generator password_generator.py
     
     - name: Upload artifact
