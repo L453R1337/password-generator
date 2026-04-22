@@ -5,7 +5,7 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: centos:8  # Запускаем в CentOS 8
+    container: ubuntu-18.04  # Запускаем в CentOS 8
     
     steps:
     - uses: actions/checkout@v4
