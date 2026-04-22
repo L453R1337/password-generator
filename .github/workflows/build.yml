@@ -1,4 +1,4 @@
-name: Build Static Binary
+name: Build Password Generator
 
 on: [push, workflow_dispatch]
 
@@ -10,18 +10,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install dependencies
+    - name: Install Python and dependencies
       run: |
-        apk add --no-cache python3 py3-pip py3-tkinter tk
+        apk add --no-cache python3 py3-pip python3-tkinter tk
         python3 -m pip install --upgrade pip
         pip3 install pyinstaller
     
-    - name: Build
+    - name: Build executable
       run: |
         pyinstaller --onefile --name password-generator password_generator.py
     
-    - name: Upload
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: password-generator-alpine
+        name: password-generator
         path: dist/password-generator
