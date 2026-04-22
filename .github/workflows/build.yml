@@ -1,54 +1,25 @@
-name: Build Password Generator
+name: Build Linux Executable
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:  # Позволяет запускать вручную
+on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
+    - name: Install Python and Tkinter
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-tk
+        sudo apt-get install -y python3 python3-pip python3-tk
         pip install pyinstaller
     
-    - name: Build with PyInstaller
+    - name: Create executable
       run: |
-        pyinstaller --onefile --windowed \
-          --name password-generator \
-          --add-data "/usr/lib/python3.11/tkinter:tkinter" \
-          password_generator.py
+        pyinstaller --onefile --name password-generator password_generator.py
     
-    - name: Upload artifact
+    - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: password-generator-linux
+        name: password-generator
         path: dist/password-generator
-        
-    # Опционально: собрать для Windows тоже
-    - name: Build for Windows
-      run: |
-        pyinstaller --onefile --windowed \
-          --name password-generator.exe \
-          password_generator.py
-      if: false  # Пока отключено, раскомментируйте если нужно
-    
-    - name: Upload Windows artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: password-generator-windows
-        path: dist/password-generator.exe
-      if: false  # Пока отключено
