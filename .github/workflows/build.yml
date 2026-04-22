@@ -1,25 +1,33 @@
-name: Build Linux Executable
+name: Build for GLIBC 2.28
 
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: centos:8  # Запускаем в CentOS 8
+    
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install Python and Tkinter
+    - name: Install Python and dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y python3 python3-pip python3-tk
-        pip install pyinstaller
+        # CentOS 8 setup
+        cd /etc/yum.repos.d/
+        sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+        
+        # Install Python 3 and Tkinter
+        yum install -y python3 python3-devel python3-tkinter tk-devel
+        python3 -m ensurepip
+        pip3 install pyinstaller
     
-    - name: Create executable
+    - name: Build executable
       run: |
         pyinstaller --onefile --name password-generator password_generator.py
     
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: password-generator
+        name: password-generator-centos8
         path: dist/password-generator
